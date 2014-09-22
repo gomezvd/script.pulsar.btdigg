@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <setting label="Language" type="text" id="idioma_xml" default="es"/>
+  <setting label="Use Fuzzy" type="bool" id="use_fuzzy" default="true"/>
+  <setting label="Fuzzy Threshold" type="slider" id="fuzzy_threshold" default="92" range="90,100" option="int"/>
+</settings>
