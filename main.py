@@ -10,6 +10,8 @@ import unicodedata
 API_KEY = "57983e31fb435df4df77afb854740ea9"
 BASE_URL = "http://api.themoviedb.org/3"
 IDIOMA = "es"
+#pag_esp = "+%26+%28elitetorrent+%7C+divxtotal+%7C+divxatope+%7C+lokotorrent+%7C+newpct+%29"
+pag_esp = "+%40content+%28elitetorrent+%7C+newpct+%29"
 HEADERS = {
     "Referer": BASE_URL,
 }
@@ -35,19 +37,26 @@ def search_episode(imdb_id, tvdb_id, name, season, episode):
     texto = pelicula.read()
     texto = texto.replace("'", "\"")
     texto1 = json.loads(texto)
-    xbmc.log('Victor: %s' % texto1.keys(), xbmc.LOGDEBUG)
+ #   xbmc.log('Victor: %s' % texto1.keys(), xbmc.LOGDEBUG)
     texto2 = texto1['tv_results']
     texto3 = texto2[0]
-    xbmc.log('Victor: %s' % texto3, xbmc.LOGDEBUG)
+#    xbmc.log('Victor: %s' % texto3, xbmc.LOGDEBUG)
 
     
-    xbmc.log('Victor: %s' % texto3.keys(), xbmc.LOGDEBUG)
+#    xbmc.log('Victor: %s' % texto3.keys(), xbmc.LOGDEBUG)
     nombre = texto3.get("name")
     nombre = elimina_tildes(nombre)
     nombre = nombre.replace(":", " ")
  #   nombre = nombre.replace(" ", "+")
-    xbmc.log('Victor: %s %dX%02d' % (nombre, season, episode), xbmc.LOGDEBUG)
-    return search("%s %dX%02d" % (nombre, season, episode))
+    temporada = "" 
+    pag_bus = ""
+    if IDIOMA == 'es':
+ #           nombre = nombre + pag_esp
+            pag_bus = pag_esp
+            temporada = "temporada"
+    nombre = "%40name+" + nombre         
+#    xbmc.log('Victor: %s %s%dX%02d%s%d%02d%s %s' % (nombre, "+%26+%28+",season, episode, "+%7c+", season, episode, "+%29", pag_bus), xbmc.LOGDEBUG)
+    return search('"%s" %s%dX%02d%s%d%02d%s %s' % (nombre, "+%26+%28+",season, episode, "+%7c+", season, episode, "+%29", pag_bus))
 
 def elimina_tildes(s): 
     return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')) 
@@ -70,7 +79,11 @@ def search_movie(imdb_id, name, year):
     nombre = elimina_tildes(nombre)
     nombre = nombre.replace(":", " ")
     nombre = nombre.replace(" ", "+")
-    xbmc.log('Victor: %s' % nombre, xbmc.LOGDEBUG)
+ #   xbmc.log('Victor: %s' % nombre, xbmc.LOGDEBUG)
+    if nombre == name:
+        if IDIOMA == 'es':
+            nombre = nombre + pag_esp
+    nombre = "%40name+" + nombre        
     response = urllib2.urlopen("http://btdigg.org/search?info_hash=&q=" + nombre)
     data = response.read()
     if response.headers.get("Content-Encoding", "") == "gzip":
@@ -82,4 +95,5 @@ urllib2.urlopen(
     PAYLOAD["callback_url"],
     data=json.dumps(globals()[PAYLOAD["method"]](*PAYLOAD["args"]))
 )
+
 
