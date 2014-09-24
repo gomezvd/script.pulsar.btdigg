@@ -55,8 +55,8 @@ def search_episode(imdb_id, tvdb_id, name, season, episode):
             pag_bus = pag_esp
             temporada = "temporada"
     nombre = "%40name+" + nombre         
-#    xbmc.log('Victor: %s %s%dX%02d%s%d%02d%s %s' % (nombre, "+%26+%28+",season, episode, "+%7c+", season, episode, "+%29", pag_bus), xbmc.LOGDEBUG)
-    return search('"%s" %s%dX%02d%s%d%02d%s %s' % (nombre, "+%26+%28+",season, episode, "+%7c+", season, episode, "+%29", pag_bus))
+#    xbmc.log('Victor: %s %s%dX%02d%s%d%02d %s' % (nombre, "+%26+%28+",season, episode, "+%7c+", season, episode, pag_bus), xbmc.LOGDEBUG)
+    return search('"%s" %s%dX%02d%s%d%02d %s' % (nombre, "+%26+%28+",season, episode, "+%7c+", season, episode, pag_bus))
 
 def elimina_tildes(s): 
     return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')) 
