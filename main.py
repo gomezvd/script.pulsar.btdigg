@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import sys
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'resources', 'site-packages'))
+#librerias = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' ) )
+#sys.path.append (librerias)
 import json
 import base64
 import re
@@ -22,11 +25,12 @@ HEADERS = {
     "Referer": BASE_URL,
 }
 PAYLOAD = json.loads(base64.b64decode(sys.argv[1]))
-__addon__ = xbmcaddon.Addon(str(sys.argv[0]))
-addon_dir = xbmc.translatePath(__addon__.getAddonInfo('path'))
-#sys.path.append(os.path.join(addon_dir, 'resources', 'lib' ))
-idioma_xml = __addon__.getSetting("idioma_xml")
-use_screener = __addon__.getSetting("use_screener")
+
+addon = xbmcaddon.Addon(id="script.pulsar.bitdgg")
+
+idioma_xml = addon.getSetting("idioma_xml")
+
+use_screener = addon.getSetting("use_screener")
 IDIOMA = idioma_xml
 def search(query):
     response = urllib2.urlopen("http://btdigg.org/search?info_hash=&q=%s" % urllib.quote_plus(query))
@@ -42,21 +46,12 @@ def search_episode(imdb_id, tvdb_id, name, season, episode):
     url_pelicula = "http://api.themoviedb.org/3/find/%s?api_key=57983e31fb435df4df77afb854740ea9&language=%s&external_source=imdb_id" % (imdb_id, IDIOMA)
  #   xbmc.log('Victor: %s' % url_pelicula, xbmc.LOGDEBUG)
     pelicula = urllib2.urlopen(url_pelicula)
- #   xbmc.log('Victor: %s' % pelicula.read() , xbmc.LOGDEBUG)
- #   texto = pelicula.read()
- #   texto = texto.replace("'s", "")
- #   texto = elimina_tildes(texto)
- #   xbmc.log('Victor: %s' % texto , xbmc.LOGDEBUG)
- #   texto1 = json.loads(texto)
+
     texto1 = json.loads(pelicula.read())
  #   xbmc.log('Victor: %s' % texto1.keys(), xbmc.LOGDEBUG)
     texto2 = texto1['tv_results']
     texto3 = texto2[0]
 
-#    xbmc.log('Victor: %s' % texto3, xbmc.LOGDEBUG)
-
-    
-#    xbmc.log('Victor: %s' % texto3.keys(), xbmc.LOGDEBUG)
     nombre = texto3.get("name")
     if nombre == "24" and season == 9 and IDIOMA == 'es':
                  nombre = u"24 vive otro dia"
