@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
 <settings>
-  <setting label="Language" type="text" id="idioma_xml" default="es"/>
+  <setting label="Language" type="labelenum" id="idioma_xml" values="bg|cs|da|de|el|en|es|fi|fr|he|hr|hu|it|ja|ko|nl|no|pl|pt|ru|sl|sv|th|tr|zh" default="es"/>
   <setting label="Whitout Screeners" type="bool" id="use_screener" default="true"/>
 </settings>
