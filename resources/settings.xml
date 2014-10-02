@@ -2,5 +2,12 @@
 
 <settings>
   <setting label="Language" type="labelenum" id="idioma_xml" values="bg|cs|da|de|el|en|es|fi|fr|he|hr|hu|it|ja|ko|nl|no|pl|pt|ru|sl|sv|th|tr|zh" default="es"/>
+  <setting type="sep"/>
+  <setting label="____________Quality Movies____________ " type="lsep"/>
+  <setting label="3D" type="bool" id="use_3D" default="false"/>
+  <setting label="Movies only HD" type="bool" id="only_HD" default="true"/>  
   <setting label="Whitout Screeners" type="bool" id="use_screener" default="true"/>
+   <setting type="sep"/>
+  <setting label="____________Processor Power____________ " type="lsep"/>
+  <setting label="Moderate Processor Power" type="bool" id="maquina_lenta" default="true"/>
 </settings>
