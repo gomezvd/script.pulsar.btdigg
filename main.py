@@ -17,9 +17,11 @@ API_KEY = "57983e31fb435df4df77afb854740ea9"
 BASE_URL = "http://api.themoviedb.org/3"
 IDIOMA = "es"
 #pag_esp = "+%26+%28elitetorrent+%7C+divxtotal+%7C+divxatope+%7C+lokotorrent+%7C+newpct+%29"
-pag_esp = u'+%26+%40*+%28+elitetorrent+%7C+newpct+%7C+divxatope+%7C+lokotorrent+%7C+castellano+%7C+spanish+%29'
+pag_esp = u'+%26+%40*+%28+elitetorrent+%7C+newpct+%7C+divxatope+%7C+lokotorrent+%7C+castellano+%7C+spanish+%7C+esp+%29'
 screener = "+%21screener+%21CAM+%21camrip+%21TeleSync+%21TS+%21camlat"
+sin_3d = "+%213D"
 no_ITA = "+%21ITA"
+alta_definicion = "+%28+720p+%7C+1080p+%7C+720+%7C+1080+%29"
 pag_ita = "+%40*+%28+italia+%7C+ITA+%29"
 pag_rus = "+%40*+%28+rus+%29"
 pag_fra = "+%40*+%28+french+%29"
@@ -29,13 +31,16 @@ HEADERS = {
 PAYLOAD = json.loads(base64.b64decode(sys.argv[1]))
 
 addon = xbmcaddon.Addon(id="script.pulsar.bitdgg")
-
+use_screener = addon.getSetting("use_screener")
+use_3D = addon.getSetting("use_3D")
+only_HD = addon.getSetting("only_HD")
+maquina_lenta = addon.getSetting("maquina_lenta")
 idioma_xml = addon.getSetting("idioma_xml")
 IDIOMA = idioma_xml
 suf_idioma = ""
 
 
-use_screener = addon.getSetting("use_screener")
+
 
 def search(query):
     response = urllib2.urlopen("http://btdigg.org/search?info_hash=&q=%s" % urllib.quote_plus(query))
@@ -119,10 +124,14 @@ def search_episode(imdb_id, tvdb_id, name, season, episode):
 
 def search_movie(imdb_id, name, year):
  #   xbmc.log('Victor name: %s' % name, xbmc.LOGDEBUG)
+    inicio_proceso = time.time()
     url_pelicula = "http://api.themoviedb.org/3/find/%s?api_key=57983e31fb435df4df77afb854740ea9&language=%s&external_source=imdb_id" % (imdb_id, IDIOMA)
  #   xbmc.log('Victor: %s' % url_pelicula, xbmc.LOGDEBUG)
     pelicula = urllib2.urlopen(url_pelicula)
     texto1 = json.loads(pelicula.read())
+    fin_proceso = time.time()
+    tiempo_total = fin_proceso - inicio_proceso
+    xbmc.log(' Victor Tiempo busqueda nombre espanol: %s' % tiempo_total, xbmc.LOGDEBUG)
     texto2 = texto1['movie_results']
     texto3 = texto2[0]
     nombre = texto3.get("title")
@@ -136,6 +145,8 @@ def search_movie(imdb_id, name, year):
  #   xbmc.log('Victor name: %s' % name, xbmc.LOGDEBUG)
     var_1 = "%s" % name
     var_2 = "%s" % nombre
+    if not " " in nombre:
+        var_2 = var_1
     if var_1 == var_2: 
         if IDIOMA == 'es':
             nombre = nombre + pag_esp
@@ -147,8 +158,21 @@ def search_movie(imdb_id, name, year):
     nombre = nombre.replace(" ", "+")         
     nombre = "%28%40name+" + nombre + "%29" 
  #   nombre = "%28+" + nombre + "%29"  
-    if use_screener:
-        nombre = nombre + screener
+
+    if only_HD == "true": 
+             nombre = nombre + alta_definicion 
+    else: 
+        if use_screener == "true": 
+          nombre = nombre + screener
+          
+    if use_3D == "true": 
+         xbmc.log(' Victor Con 3D', xbmc.LOGDEBUG)   
+    else:     
+         nombre = nombre + sin_3d
+         
+    fin_proceso2 = time.time()
+    tiempo_total = fin_proceso2 - fin_proceso
+    xbmc.log(' Victor Tiempo transformacion: %s' % tiempo_total, xbmc.LOGDEBUG)    
     xbmc.log('Victor: %s' % nombre.encode('utf-8'), xbmc.LOGDEBUG)     
     response = urllib2.urlopen("http://btdigg.org/search?info_hash=&q=" + nombre.encode('utf-8'))
     data = response.read()
@@ -162,7 +186,8 @@ def search_movie(imdb_id, name, year):
 
              prue2 = urllib2.urlopen("http://btdigg.org/search?info_hash=&q=" + nombre.encode('utf-8'))
              data = prue2.read()
-    elif '<td class="selected"><a href="/search?q' in data:    
+    elif maquina_lenta == "false":
+         if '<td class="selected"><a href="/search?q' in data:    
              response = urllib2.urlopen("http://btdigg.org/search?info_hash=&q=" + nombre.encode('utf-8') + "&p=1")
              data2 = response.read()   
              data = data + data2  
