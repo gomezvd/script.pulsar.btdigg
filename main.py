@@ -52,7 +52,7 @@ def search(nombre):
              continue
          info_hash, name, files, size, dl, seen = line.strip().split('\t')[:6]
          res = dict(uri = 'magnet:?xt=urn:btih:%s' % (info_hash,) + '&amp;dn=' + '%s' % name.translate(None, '|') )
-
+         provider.log.warning(' Victor %s' % res) 
          data.append(res)
     #     xbmc.log(' Victor prueba: %s' % res, xbmc.LOGDEBUG)
     except urllib2.HTTPError as error_code:
@@ -77,7 +77,7 @@ def search(nombre):
 def search_episode(episode):
  
 #def search_episode(imdb_id, tvdb_id, name, season, episode):
- 
+    imdb_id = episode.get("imdb_id") 
   # Busqueda de titulo en idioma de audio ------------------------ 
     if IDIOMA <> 'en':
          inicio_proceso = time.time()
@@ -104,8 +104,10 @@ def search_episode(episode):
          nombre = nombre.replace(u'ó', "o")
          nombre = nombre.replace(u'ú', "u")
     else:
-         nombre = name       
-            
+         nombre = episode.get("title")        
+    name = episode.get("title")  
+    season = episode.get("season")  
+    episodio = episode.get("episode")    
     nombre = nombre.replace(":", " ")
 
     temporada = "" 
@@ -127,7 +129,7 @@ def search_episode(episode):
     else:    
         nombre = '%40name+"' + name + '"' + suf_idioma    
 
-    busqueda = "%s %s%dX%02d%s%d%02d%sS%02dE%02d%s" % (nombre, "+%28+",season, episode, "+%7c+", season, episode, "+%7c+", season, episode, "+%29")
+    busqueda = "%s %s%dX%02d%s%d%02d%sS%02dE%02d%s" % (nombre, "+%28+",season, episodio, "+%7c+", season, episodio, "+%7c+", season, episodio, "+%29")
     busqueda = busqueda.replace(" ", "+")
     if IDIOMA == 'es':
             busqueda = busqueda + no_ITA
@@ -164,18 +166,21 @@ def search_movie(movie):
     idioma_xml = addon.getSetting("idioma_xml")
     IDIOMA = idioma_xml 
   ###-------------------------------------------------------------
-  
+    provider.log.warning(' Victor error %s' % movie) 
+  # Busqueda de titulo en idioma de audio ------------------------ 
   # Busqueda de titulo en idioma de audio ------------------------ 
     if IDIOMA <> 'en':
+      inicio_proceso = time.time()
+      imdb_id = movie.get("imdb_id")
+      url_pelicula = "http://api.themoviedb.org/3/find/%s?api_key=57983e31fb435df4df77afb854740ea9&language=%s&external_source=imdb_id" % (imdb_id, IDIOMA)
 
-        if IDIOMA = 'es':
-          nombre = es  
-        if IDIOMA = 'nl':
-          nombre = nl
-        if IDIOMA = 'ru':
-          nombre = ru 
-        if IDIOMA = 'it':
-          nombre = it 
+      pelicula = urllib2.urlopen(url_pelicula)
+      texto1 = json.loads(pelicula.read())
+      
+      texto2 = texto1['movie_results']
+      texto3 = texto2[0]
+      nombre = texto3.get("title")
+
 
       nombre = nombre.replace(u'á', "a")
       nombre = nombre.replace(u'é', "e")
@@ -183,9 +188,9 @@ def search_movie(movie):
       nombre = nombre.replace(u'ó', "o")
       nombre = nombre.replace(u'ú', "u")
     else:
-      nombre = name  
+      nombre = movie.get("title")  
   # -------------------------------------------------------------
-    var_1 = "%s" % name
+    var_1 = "%s" % movie.get("title")
     var_2 = "%s" % nombre
     suf_idioma = ""
     if var_1 == var_2: 
@@ -203,7 +208,7 @@ def search_movie(movie):
             suf_idioma = pag_rus 
     elif IDIOMA == 'fr':
             suf_idioma = pag_fra         
-    nombre2 = '%28"' + name + '"' + suf_idioma + '+%29'
+    nombre2 = '%28"' + movie.get("title") + '"' + suf_idioma + '+%29'
     nombre = '%28%40name+' + '%28+"' + nombre + '"+%7c+' + nombre2 + '+%29' + "%29" 
     nombre = nombre.replace(":", " ")
     nombre = nombre.replace(" ", "+")   
@@ -224,4 +229,3 @@ def search_movie(movie):
 
 # This registers your module for use
 provider.register(search, search_movie, search_episode)
-
