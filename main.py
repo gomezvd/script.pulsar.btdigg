@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pulsar import provider
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'resources', 'site-packages'))
 #librerias = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'resources' ) )
@@ -55,23 +56,27 @@ def search(nombre):
          data.append(res)
     #     xbmc.log(' Victor prueba: %s' % res, xbmc.LOGDEBUG)
     except urllib2.HTTPError as error_code:
-            xbmc.log(' Victor error %s' % error_code, xbmc.LOGDEBUG)
+            provider.log.error(' Victor error %s' % error_code, xbmc.LOGDEBUG)
     finally:
             u.close()
-    fin_proceso = time.time()
-    tiempo_total = fin_proceso - inicio_proceso
-    xbmc.log(' Victor Tiempo busqueda api: %s' % tiempo_total, xbmc.LOGDEBUG)
-    xbmc.log(' Victor prueba: %s' % data, xbmc.LOGDEBUG) 
-    if data == []: 
-       __addonname__   = addon.getAddonInfo('name')
-       line1 = "No se encuentran torrents con la calidad e idioma especificados"
-       xbmcgui.Dialog().ok(__addonname__, line1)
+
        
   #
   #   Busqueda de episodios  puede ser necesario buscar las series en tvdb en otra version
   #
   
-def search_episode(imdb_id, tvdb_id, name, season, episode):
+# Episode Payload Sample
+# {
+#     "imdb_id": "tt0092400",
+#     "tvdb_id": "76385",
+#     "title": "married with children",
+#     "season": 1,
+#     "episode": 1,
+#     "titles": null
+# }
+def search_episode(episode):
+ 
+#def search_episode(imdb_id, tvdb_id, name, season, episode):
  
   # Busqueda de titulo en idioma de audio ------------------------ 
     if IDIOMA <> 'en':
@@ -91,9 +96,7 @@ def search_episode(imdb_id, tvdb_id, name, season, episode):
                  nombre = u"24 vive otro dia"
                  season = 1
   # --------------------------------------              
-         fin_proceso = time.time()
-         tiempo_total = fin_proceso - inicio_proceso
-         xbmc.log(' Victor Tiempo busqueda nombre espanol: %s' % tiempo_total, xbmc.LOGDEBUG)
+
  
          nombre = nombre.replace(u'á', "a")
          nombre = nombre.replace(u'é', "e")
@@ -129,18 +132,30 @@ def search_episode(imdb_id, tvdb_id, name, season, episode):
     if IDIOMA == 'es':
             busqueda = busqueda + no_ITA
 
-    xbmc.log('Victor: %s' % busqueda.encode('utf-8'), xbmc.LOGDEBUG)
+
     search(busqueda)
  
-    
+       
  
     return data
        
   #
   #   Busqueda de peliculas
   #
-  
-def search_movie(imdb_id, name, year):
+  # {
+#     "imdb_id": "tt1254207",
+#     "title": "big buck bunny",
+#     "year": 2008,
+#     "titles": {
+#         "es": "el gran conejo",
+#         "nl": "peach open movie project",
+#         "ru": "большои кролик",
+#         "us": "big buck bunny short 2008"
+#     }
+# }
+
+
+def search_movie(movie):
   ### Pendiente de revisar porque necesito poner como local IDIOMA
     addon = xbmcaddon.Addon(id="script.pulsar.bitdgg")
     use_screener = addon.getSetting("use_screener")
@@ -152,19 +167,16 @@ def search_movie(imdb_id, name, year):
   
   # Busqueda de titulo en idioma de audio ------------------------ 
     if IDIOMA <> 'en':
-      inicio_proceso = time.time()
-      url_pelicula = "http://api.themoviedb.org/3/find/%s?api_key=57983e31fb435df4df77afb854740ea9&language=%s&external_source=imdb_id" % (imdb_id, IDIOMA)
 
-      pelicula = urllib2.urlopen(url_pelicula)
-      texto1 = json.loads(pelicula.read())
-      fin_proceso = time.time()
-      tiempo_total = fin_proceso - inicio_proceso
-      xbmc.log(' Victor Tiempo busqueda nombre espanol: %s' % tiempo_total, xbmc.LOGDEBUG)
+        if IDIOMA = 'es':
+          nombre = es  
+        if IDIOMA = 'nl':
+          nombre = nl
+        if IDIOMA = 'ru':
+          nombre = ru 
+        if IDIOMA = 'it':
+          nombre = it 
 
-      
-      texto2 = texto1['movie_results']
-      texto3 = texto2[0]
-      nombre = texto3.get("title")
       nombre = nombre.replace(u'á', "a")
       nombre = nombre.replace(u'é', "e")
       nombre = nombre.replace(u'í', "i")
@@ -201,19 +213,15 @@ def search_movie(imdb_id, name, year):
         if use_screener == "true": 
           nombre = nombre + screener
           
-    if use_3D == "true": 
-         xbmc.log(' Victor Con 3D', xbmc.LOGDEBUG)   
-    else:     
+    if use_3D == "false":   
          nombre = nombre + sin_3d
-         
-    xbmc.log('Victor: %s' % nombre.encode('utf-8'), xbmc.LOGDEBUG)     
+   
     
     search(nombre) 
 
  
     return data
- 
-urllib2.urlopen(
-    PAYLOAD["callback_url"],
-    data=json.dumps(globals()[PAYLOAD["method"]](*PAYLOAD["args"]))
-)
+
+# This registers your module for use
+provider.register(search, search_movie, search_episode)
+
