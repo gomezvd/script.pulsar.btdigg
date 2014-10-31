@@ -193,7 +193,7 @@ def search_movie(movie):
     var_1 = "%s" % movie.get("title")
     var_2 = "%s" % nombre
     suf_idioma = ""
-    if var_1 == var_2: 
+    if var_1.lower() == var_2.lower(): 
           if IDIOMA == 'es':
             nombre = nombre + pag_esp
           if IDIOMA == 'it':
