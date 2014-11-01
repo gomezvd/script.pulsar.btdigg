@@ -196,8 +196,8 @@ def search_movie(movie):
   # -------------------------------------------------------------
     var_1 = "%s" % movie.get("title")
     var_2 = "%s" % nombre
-    provider.log.warning(' Victor nombre pulsar: %s' % var_1)
-    provider.log.warning(' Victor nombre pulsar: %s' % var_2)
+  #  provider.log.warning(' Victor nombre pulsar: %s' % var_1)
+  #  provider.log.warning(' Victor nombre pulsar: %s' % var_2)
     suf_idioma = ""
     if var_1.lower() == var_2.lower(): 
           if IDIOMA == 'es':
