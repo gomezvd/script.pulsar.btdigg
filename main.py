@@ -49,10 +49,12 @@ def search(nombre):
     try:
        for line in u:
          if line.startswith('#'):
+   #          provider.log.warning(' Victor %s' % line) 
              continue
          info_hash, name, files, size, dl, seen = line.strip().split('\t')[:6]
-         res = dict(uri = 'magnet:?xt=urn:btih:%s' % (info_hash,) + '&amp;dn=' + '%s' % name.translate(None, '|') )
-         provider.log.warning(' Victor %s' % res) 
+         magnet_str = 'magnet:?xt=urn:btih:%s' % (info_hash,) + '&amp;dn=' + '%s' % name.translate(None, '|')
+         res = dict(uri = magnet_str)
+   #      provider.log.warning(' Victor %s' % res) 
          data.append(res)
     #     xbmc.log(' Victor prueba: %s' % res, xbmc.LOGDEBUG)
     except urllib2.HTTPError as error_code:
@@ -180,7 +182,9 @@ def search_movie(movie):
       texto2 = texto1['movie_results']
       texto3 = texto2[0]
       nombre = texto3.get("title")
-
+#      list_nombres = movie.get("titles")
+#      nombre_pulsar = list_nombres.get("es") 
+#      provider.log.warning(' Victor nombre pulsar: %s' % nombre_pulsar)  
 
       nombre = nombre.replace(u'á', "a")
       nombre = nombre.replace(u'é', "e")
@@ -192,6 +196,8 @@ def search_movie(movie):
   # -------------------------------------------------------------
     var_1 = "%s" % movie.get("title")
     var_2 = "%s" % nombre
+    provider.log.warning(' Victor nombre pulsar: %s' % var_1)
+    provider.log.warning(' Victor nombre pulsar: %s' % var_2)
     suf_idioma = ""
     if var_1.lower() == var_2.lower(): 
           if IDIOMA == 'es':
